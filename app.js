@@ -1,76 +1,42 @@
-let numeroSecreto = 0;
-let intentos = 0;
-let listaNumerosSorteados = [];
-let numeroMaximo = 10;
+// 1. Obtener referencias a los elementos del DOM
+const amigoInput = document.getElementById('amigo'); // Campo de texto
+const listaAmigos = document.getElementById('listaAmigos'); // Lista de amigos
+const resultado = document.getElementById('resultado'); // Elemento para mostrar el resultado
 
+// 2. Crear un array para almacenar los nombres
+let amigos = [];
 
+// 3. Función para agregar un amigo a la lista
+function agregarAmigo() {
+    const nombre = amigoInput.value.trim(); // Capturar el valor del campo de entrada y eliminar espacios en blanco
 
-function asignarTextoElemento(elemento, texto) {
-    let elementoHTML = document.querySelector(elemento);
-    elementoHTML.innerHTML = texto;
-    return;
-}
-
-function verificarIntento() {
-    let numeroDeUsuario = parseInt(document.getElementById('valorUsuario').value);
-    
-    if (numeroDeUsuario === numeroSecreto) {
-        asignarTextoElemento('p',`Acertaste el número en ${intentos} ${(intentos === 1) ? 'vez' : 'veces'}`);
-        document.getElementById('reiniciar').removeAttribute('disabled');
+    if (nombre) { // Validar que el campo no esté vacío
+        amigos.push(nombre); // Añadir el nombre al array de amigos
+        actualizarLista(); // Actualizar la lista en la página
+        amigoInput.value = ''; // Limpiar el campo de entrada
     } else {
-        //El usuario no acertó.
-        if (numeroDeUsuario > numeroSecreto) {
-            asignarTextoElemento('p','El número secreto es menor');
-        } else {
-            asignarTextoElemento('p','El número secreto es mayor');
-        }
-        intentos++;
-        limpiarCaja();
-    }
-    return;
-}
-
-function limpiarCaja() {
-    document.querySelector('#valorUsuario').value = '';
-}
-
-function generarNumeroSecreto() {
-    let numeroGenerado =  Math.floor(Math.random()*numeroMaximo)+1;
-
-    console.log(numeroGenerado);
-    console.log(listaNumerosSorteados);
-    //Si ya sorteamos todos los números
-    if (listaNumerosSorteados.length == numeroMaximo) {
-        asignarTextoElemento('p','Ya se sortearon todos los números posibles');
-    } else {
-        //Si el numero generado está incluido en la lista 
-        if (listaNumerosSorteados.includes(numeroGenerado)) {
-            return generarNumeroSecreto();
-        } else {
-            listaNumerosSorteados.push(numeroGenerado);
-            return numeroGenerado;
-        }
+        alert('Por favor, inserte un nombre.'); // Mostrar alerta si el campo está vacío
     }
 }
 
-function condicionesIniciales() {
-    asignarTextoElemento('h1','Juego del número secreto!');
-    asignarTextoElemento('p',`Indica un número del 1 al ${numeroMaximo}`);
-    numeroSecreto = generarNumeroSecreto();
-    intentos = 1;
-    console.log(numeroSecreto);
+// 4. Función para actualizar la lista de amigos en la página
+function actualizarLista() {
+    listaAmigos.innerHTML = ''; // Limpiar la lista existente
+
+    amigos.forEach((nombre) => { // Iterar sobre el array de amigos
+        const li = document.createElement('li'); // Crear un nuevo elemento <li>
+        li.textContent = nombre; // Asignar el nombre al <li>
+        listaAmigos.appendChild(li); // Agregar el <li> a la lista
+    });
 }
 
-function reiniciarJuego() {
-    //limpiar caja
-    limpiarCaja();
-    //Indicar mensaje de intervalo de números 
-    //Generar el número aleatorio
-    //Inicializar el número intentos
-    condicionesIniciales();
-    //Deshabilitar el botón de nuevo juego
-    document.querySelector('#reiniciar').setAttribute('disabled','true');
-    
+// 5. Función para sortear un amigo secreto
+function sortearAmigo() {
+    if (amigos.length > 0) { // Validar que haya amigos disponibles
+        const indiceAleatorio = Math.floor(Math.random() * amigos.length); // Generar un índice aleatorio
+        const amigoSecreto = amigos[indiceAleatorio]; // Obtener el nombre correspondiente al índice
+        resultado.innerHTML = `<li>¡El amigo secreto es: <strong>${amigoSecreto}</strong>!</li>`; // Mostrar el resultado
+    } else {
+        resultado.innerHTML = '<li>No hay amigos en la lista.</li>'; // Mostrar mensaje si no hay amigos
+    }
 }
-
-condicionesIniciales();
